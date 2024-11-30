@@ -30,3 +30,54 @@ npm start
 git add README.md  
 git commit -m "Add README"  
 git push origin main  
+mkdir backend frontend
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+    socket.on('message', (msg) => io.emit('message', msg));
+});
+
+server.listen(3001, () => console.log('Server running on port 3001'));
+import { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+const socket = io('http://localhost:3001');
+
+function App() {
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
+
+    useEffect(() => {
+        socket.on('message', (msg) => setMessages((prev) => [...prev, msg]));
+    }, []);
+
+    const sendMessage = () => {
+        socket.emit('message', message);
+        setMessage('');
+    };
+
+    return (
+        <div>
+            {messages.map((msg, i) => <p key={i}>{msg}</p>)}
+            <input value={message} onChange={(e) => setMessage(e.target.value)} />
+            <button onClick={sendMessage}>Send</button>
+        </div>
+    );
+}
+
+export default App;
+git add .  
+git commit -m "Add code structure"  
+git push origin main  
+tree
+.
+├── backend/
+│   ├── index.js
+├── frontend/
+│   ├── src/
+│   │   ├── App.js
+├── README.md
